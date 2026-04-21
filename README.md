@@ -8,7 +8,7 @@ A terminal-style permission dialog for [Claude Code](https://claude.ai/code) on 
 
 Replaces the built-in terminal permission prompt with a floating PyQt6 window — keyboard-driven, dark-themed, and project-aware. Also plays a 🎉 sound when Claude finishes a task.
 
-![screenshot placeholder]
+![screenshot](screenshot.png)
 
 ## Features
 
