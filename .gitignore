@@ -1,0 +1,4 @@
+compact-notes/
+__pycache__/
+*.pyc
+permission_allowlist.json
