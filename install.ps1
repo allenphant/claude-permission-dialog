@@ -60,7 +60,9 @@ if (-not $settings.hooks) {
 $hookEntry = [PSCustomObject]@{
     matcher = "Bash|Edit|Write|MultiEdit"
     hooks   = @(
-        [PSCustomObject]@{ type = "command"; command = $HOOK_COMMAND }
+        # the dialog waits for you (up to 3000 s, then denies); the hook's own timeout must be longer,
+        # because Claude Code lets the tool run when a hook times out
+        [PSCustomObject]@{ type = "command"; command = $HOOK_COMMAND; timeout = 3600 }
     )
 }
 
@@ -91,21 +93,16 @@ $settings.hooks.Stop = @($settings.hooks.Stop | Where-Object {
 })
 $settings.hooks.Stop += $tadaEntry
 
-# ── permissions.allow (suppress Claude's own prompt) ─────────────
-$allowRules = @("Bash(*)", "Edit(*)", "Write(*)", "MultiEdit(*)")
-if (-not $settings.permissions) {
-    $settings | Add-Member -NotePropertyName permissions -NotePropertyValue (
-        [PSCustomObject]@{ allow = $allowRules }
-    )
-} else {
-    if (-not $settings.permissions.allow) {
-        $settings.permissions | Add-Member -NotePropertyName allow -NotePropertyValue $allowRules
-    } else {
-        foreach ($rule in $allowRules) {
-            if ($settings.permissions.allow -notcontains $rule) {
-                $settings.permissions.allow += $rule
-            }
-        }
+# ── permissions.allow: remove the blanket rules older versions added ──
+# The hook now approves through its own decision (permissionDecision = allow), so no
+# Bash(*) / Edit(*) / Write(*) / MultiEdit(*) rule is needed. Those rules made the dialog the ONLY
+# gate: if the hook could not run (python missing, script deleted) every tool ran unasked.
+$legacyRules = @("Bash(*)", "Edit(*)", "Write(*)", "MultiEdit(*)")
+if ($settings.permissions -and $settings.permissions.allow) {
+    $removed = @($settings.permissions.allow | Where-Object { $legacyRules -contains $_ })
+    if ($removed.Count -gt 0) {
+        $settings.permissions.allow = @($settings.permissions.allow | Where-Object { $legacyRules -notcontains $_ })
+        Write-Host "[OK] removed blanket allow rules from older versions: $($removed -join ', ')" -ForegroundColor Yellow
     }
 }
 
