@@ -1,5 +1,9 @@
 # claude-permission-dialog
 
+> **本專案已不再維護（2026-10）。** 這個版本有已知的設計問題：對話框或腳本出錯、逾時時，Claude Code 會讓工具照常執行（只有 hook 以退出碼 2 結束才會擋下），而安裝程式又會關掉 Claude 內建的提示，所以出錯時等於沒有任何把關；「不再詢問」的規則也能被串接命令（`git status; …`）與 `..` 路徑繞過。修正版放在 [`security/audit-2026-10-21`](https://github.com/allenphant/claude-permission-dialog/tree/security/audit-2026-10-21) 分支（失敗即拒絕、規則收窄、21 個測試），**未在 Windows 上驗證過視窗畫面**，也不會再合併進主分支。如果要使用，請從該分支安裝並自行驗證。
+>
+> **This project is no longer maintained (2026-10).** This version has known design problems: when the dialog or script fails or times out, Claude Code lets the tool run (only a hook exiting with code 2 blocks it), and the installer turns off Claude's built-in prompt, so a failure leaves no gate at all; "don't ask again" rules can also be bypassed with chained commands (`git status; …`) and `..` paths. A fixed version is on the [`security/audit-2026-10-21`](https://github.com/allenphant/claude-permission-dialog/tree/security/audit-2026-10-21) branch (fail closed, narrower rules, 21 tests); its dialog window was **not verified on Windows**, and it will not be merged into the main branch. To use it, install from that branch and test it yourself.
+
 **English** | [中文](#中文)
 
 ---
